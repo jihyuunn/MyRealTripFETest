@@ -139,7 +139,7 @@ const HotelList = () => {
             <div className="lds-facebook"><div></div><div></div><div></div></div>
             </LoadingSpinner>:
             hotelsInRange.map((hotel,index) => (
-                <HotelListItem hotel={hotel} key={index}/>
+                <HotelListItem hotel={hotel} key={index} tag={index} onClick={e => currentClick(e, hotel)}/>
             ))
         )
     }
@@ -153,11 +153,24 @@ const HotelList = () => {
         })
         setHotelsInRange(temp)
     }
+
+    const [current, setCurrent] = useState([])
+    const currentClick = (e, hotel) => {
+        console.log(hotel)
+        if (!current.includes(hotel.name)) {
+            if (current.length === 5) {
+                setCurrent(oldArray => [...oldArray.slice(1,6), hotel.name])
+            } else {
+                setCurrent(oldArray => [...oldArray, hotel.name])
+            }
+        }
+    }
     return (
         <ListContainer>
             <div className="range">
                 <InputRage maxValue={1000000} minValue={0} value={range} onChange={rangeHandler} />
                 <button onClick={searchHandler}>검색하기</button>
+                <div>{current.map((cur, index) => <li key={index}>{cur}</li>)}</div>
             </div>
             <div className="list">
                 {isLoadingFail ? <div>다시 시도해주세요<button onClick={getHotelList}>retry</button></div>:List()}

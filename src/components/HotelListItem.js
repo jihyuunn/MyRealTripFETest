@@ -11,10 +11,10 @@ const ItemContainer = styled.div`
     }
 `
 
-const HotelListItem = ({hotel}) => {
+const HotelListItem = ({hotel, onClick, tag}) => {
     return (
-        <ItemContainer>
-            <img src={hotel.imageUrl} alt='hotel' onClick={() => console.log(hotel)}/>
+        <ItemContainer onClick={onClick} data-tag={tag}>
+            <img src={hotel.imageUrl} alt='hotel'/>
             <div>
                 <div>{hotel.freeServices}</div>
                 <h2>{hotel.name}</h2>
