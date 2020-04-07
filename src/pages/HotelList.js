@@ -18,6 +18,9 @@ const ListContainer = styled.div`
         width: 20%;
       }
       padding: 10%;
+      button {
+          margin:2.5rem;
+      }
   }
   .list {
     width: 100%;
@@ -82,6 +85,8 @@ const HotelList = () => {
     const [page, setPage] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
     const [isLoadingFail, setIsLoadingFail] = useState(false)
+    const [hotelsInRange, setHotelsInRange] = useState([])
+    const [hotelListDone, setHotelListDone] = useState(false)
     const getHotelList = async() => {
         setIsLoading(true)
         setIsLoadingFail(false)
@@ -90,47 +95,69 @@ const HotelList = () => {
                 `${process.env.REACT_APP_BASE_API}/hotels?page=${page}`
             )
             console.log(response)
-            setHotels(response.data)
+            setHotelsInRange(response.data)
+            await setHotels(response.data)
+            await setHotelListDone(true)
         } catch (e) {
             console.log(e)
             setIsLoadingFail(true)
         }
         setIsLoading(false)
     }
-    const [hotelPrices, setHotelPrices] = useState([])
     const getHotelPrice = async() => {
+        let temp = hotels;
         for (let i=0; i<20; i++) {
             try {
                 const response = await Axios.get(
                     `${process.env.REACT_APP_BASE_API}/hotel-prices?ids=${i}`
                 )
-                console.log(response.data[i])
-                setHotelPrices(oldArray => [...oldArray, response.data])
+                // console.log(temp)
+                if (temp[i].id === i && !temp[i].price) {
+                    // setHotels(oldArray => [...oldArray, oldArray[i].price=response.data[i]])
+                    temp[i].price = response.data[i]
+                }
             } catch (error) {
                 console.log(error)
             }
         }
+        setHotelsInRange(temp)
+        setHotels(temp)
     }
+
     useEffect(() => {
         const getItems = async() => {
-            await getHotelList();
-            await getHotelPrice();
+            getHotelList();
         }
         getItems();
     }, [])
+    useEffect(() => {
+            getHotelPrice();
+    }, [hotelListDone])
+
     const List = () => {
         return (isLoading ? <LoadingSpinner>
             <div className="lds-facebook"><div></div><div></div><div></div></div>
             </LoadingSpinner>:
-            hotels.map((hotel,index) => (
-                <HotelListItem hotel={hotel} key={index} prices={hotelPrices}/>
+            hotelsInRange.map((hotel,index) => (
+                <HotelListItem hotel={hotel} key={index}/>
             ))
         )
+    }
+
+    const searchHandler = () => {
+        let temp = []
+        hotels.forEach((hotel, index) => {
+            if (hotel.price >= range.min && hotel.price <= range.max) {
+                temp.push(hotel)
+            }
+        })
+        setHotelsInRange(temp)
     }
     return (
         <ListContainer>
             <div className="range">
                 <InputRage maxValue={1000000} minValue={0} value={range} onChange={rangeHandler} />
+                <button onClick={searchHandler}>검색하기</button>
             </div>
             <div className="list">
                 {isLoadingFail ? <div>다시 시도해주세요<button onClick={getHotelList}>retry</button></div>:List()}
