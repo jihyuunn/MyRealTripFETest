@@ -11,14 +11,14 @@ const ItemContainer = styled.div`
     }
 `
 
-const HotelListItem = ({hotel, prices}) => {
+const HotelListItem = ({hotel}) => {
     return (
         <ItemContainer>
-            <img src={hotel.imageUrl} alt='hotel' onClick={() => console.log(prices)}/>
+            <img src={hotel.imageUrl} alt='hotel' onClick={() => console.log(hotel)}/>
             <div>
                 <div>{hotel.freeServices}</div>
                 <h2>{hotel.name}</h2>
-                <p>{prices[hotel.id] ? prices[hotel.id][hotel.id] : 'loading'}</p>
+                <p>{hotel.price ? hotel.price : 'loading'}</p>
                 <div>
                     <p><span role="img">⭐️</span> {hotel.rate}</p>
                     <p>리뷰점수 {hotel.rate}</p>
@@ -28,4 +28,4 @@ const HotelListItem = ({hotel, prices}) => {
     )
 }
 
-export default HotelListItem
+export default React.memo(HotelListItem)
