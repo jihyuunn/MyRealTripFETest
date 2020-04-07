@@ -15,3 +15,12 @@ const arrayHandler = () => {
 
 ### range로 가격 검색
 - hotelsInRange useState를 만들어서 가격 조건에 맞는 애들 갖다 넣으면 된다
+
+### 최근 클릭한 항목
+```javascript
+const clicked = (e, hotel) => {
+    console.log(hotel)
+}
+<HotelItem hotel={hotel} onClick={e => clicked(e, hotel)}>
+```
+- 이렇게 하면 컴포넌트에 넘어가는 호텔 정보를 잡을 수 있따
